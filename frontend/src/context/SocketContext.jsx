@@ -8,7 +8,7 @@ export const SocketProvider = ({ children, userId }) => {
 
   useEffect(() => {
     // Backend URL (apna port check kar lena)
-    const newSocket = io('http://localhost:5000', {
+    const newSocket = io('https://ieee-backend-fp0e.onrender.com', {
       withCredentials: true
     });
 
