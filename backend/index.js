@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 
 // 🔥 IMPORTANT: FRONTEND URL (RENDER)
-const FRONTEND_URL = "https://ieee-frontendd.onrender.com";
+const FRONTEND_URL = "https://frontend-6ymg.onrender.com";
 
 // --- Socket.io Setup (FIXED FOR PRODUCTION) ---
 const io = new Server(server, {
