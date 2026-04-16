@@ -23,7 +23,7 @@ const Register = () => {
     setLoading(true);
     
     try {
-      const response = await API.post('/auth/register', formData);
+      API.post('/api/auth/register', formData);
       
       if (response.data.success) {
         const { user, token } = response.data;
