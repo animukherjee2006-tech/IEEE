@@ -62,11 +62,6 @@ io.on('connection', (socket) => {
 
 // Global socket access
 app.set('socketio', io);
-
-// --- Middlewares ---
-app.use(express.json());
-app.use(cookieParser());
-
 // 🔥 FIXED CORS FOR FRONTEND (IMPORTANT)
 app.use(cors({
   origin: FRONTEND_URL,
@@ -74,6 +69,10 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+// --- Middlewares ---
+app.use(express.json());
+app.use(cookieParser());
+
 
 // --- Routes ---
 app.use('/api/auth', require('./src/routes/authRoute'));
