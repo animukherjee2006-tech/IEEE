@@ -1,38 +1,40 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 const SocketContext = createContext();
 
 export const SocketProvider = ({ children, userId }) => {
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    // 1. Connection initialize karo with proper transports
-    const newSocket = io('https://backend-ieeee.onrender.com', {
-      withCredentials: true,
-      transports: ['websocket', 'polling'], // Fallback options
-      reconnectionAttempts: 5,
-    });
+    // create socket only once
+    if (!socketRef.current) {
+      socketRef.current = io('https://backend-ieeee.onrender.com', {
+        withCredentials: true,
+        transports: ['websocket', 'polling'],
+        reconnectionAttempts: 5,
+      });
 
-    // 2. Sirf tab emit karo jab connection confirm ho jaye
-    newSocket.on('connect', () => {
-      console.log('Connected to socket:', newSocket.id);
-      if (userId) {
-        newSocket.emit('join_room', userId);
-      }
-    });
+      socketRef.current.on('connect', () => {
+        console.log('Connected:', socketRef.current.id);
+      });
+    }
 
-    setSocket(newSocket);
+    // join room when userId changes
+    if (userId && socketRef.current) {
+      socketRef.current.emit('join_room', userId);
+    }
 
-    // 3. Cleanup function
     return () => {
-      newSocket.off('connect');
-      newSocket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, [userId]); // Jab userId change hoga, naya room join hoga
+  }, [userId]);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={socketRef.current}>
       {children}
     </SocketContext.Provider>
   );
