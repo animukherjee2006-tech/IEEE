@@ -8,7 +8,7 @@ export const SocketProvider = ({ children, userId }) => {
 
   useEffect(() => {
     // 1. Connection initialize karo with proper transports
-    const newSocket = io('https://ieee-backend-fp0e.onrender.com', {
+    const newSocket = io('https://backend-ieeee.onrender.com', {
       withCredentials: true,
       transports: ['websocket', 'polling'], // Fallback options
       reconnectionAttempts: 5,
