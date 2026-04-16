@@ -7,20 +7,29 @@ export const SocketProvider = ({ children, userId }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // Backend URL (apna port check kar lena)
+    // 1. Connection initialize karo with proper transports
     const newSocket = io('https://ieee-backend-fp0e.onrender.com', {
-      withCredentials: true
+      withCredentials: true,
+      transports: ['websocket', 'polling'], // Fallback options
+      reconnectionAttempts: 5,
+    });
+
+    // 2. Sirf tab emit karo jab connection confirm ho jaye
+    newSocket.on('connect', () => {
+      console.log('Connected to socket:', newSocket.id);
+      if (userId) {
+        newSocket.emit('join_room', userId);
+      }
     });
 
     setSocket(newSocket);
 
-    // Jab user login ho, use uske room mein join karwao
-    if (userId) {
-      newSocket.emit('join_room', userId);
-    }
-
-    return () => newSocket.close();
-  }, [userId]);
+    // 3. Cleanup function
+    return () => {
+      newSocket.off('connect');
+      newSocket.disconnect();
+    };
+  }, [userId]); // Jab userId change hoga, naya room join hoga
 
   return (
     <SocketContext.Provider value={socket}>
