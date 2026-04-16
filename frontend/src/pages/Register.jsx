@@ -13,7 +13,7 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    role: 'consumer' // Match this exactly with your backend enum
+    role: 'consumer' 
   });
 
   const handleRegister = async (e) => {
@@ -23,16 +23,16 @@ const Register = () => {
     setLoading(true);
     
     try {
-      API.post('/api/auth/register', formData);
+      // ✅ API Call: Make sure baseURL in axios.js is correct
+      const response = await API.post('/auth/register', formData);
       
-      if (response.data.success) {
+      if (response.data && response.data.success) {
         const { user, token } = response.data;
 
-        // Backend ab user object mein isProvider bhi bhej raha hai
-        // Context update (isProvider automatically handle ho jayega context ke format function se)
+        // Context update
         await login(user, token); 
 
-        // Role-based Redirection logic
+        // Role-based Redirection
         if (user.role === 'provider' || user.isProvider) {
           navigate('/provider-dashboard');
         } else {
@@ -41,8 +41,9 @@ const Register = () => {
       }
     } catch (err) {
       console.error("Registration Error:", err);
-      // Agar backend se validation error aaye (jaise 'user is not supported') toh yahan dikhega
-      alert(err.response?.data?.message || "Something went wrong during registration!");
+      // ✅ Fix: Handling error response correctly to avoid 'undefined' errors
+      const errorMessage = err.response?.data?.message || "Something went wrong during registration!";
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -67,34 +68,51 @@ const Register = () => {
           <h2 style={styles.title}>Create Account</h2>
           <p style={{ color: '#94a3b8', marginBottom: '32px' }}>Join the marketplace</p>
 
-          <label style={styles.label}>Full Name</label>
+          {/* ✅ Fixed: Added htmlFor, id, and name for accessibility */}
+          <label htmlFor="fullName" style={styles.label}>Full Name</label>
           <input 
-            type="text" required placeholder="John Doe" style={styles.input} 
+            id="fullName"
+            name="name"
+            type="text" 
+            required 
+            placeholder="John Doe" 
+            style={styles.input} 
             value={formData.name}
             onChange={(e) => setFormData({...formData, name: e.target.value})}
           />
 
-          <label style={styles.label}>Email</label>
+          <label htmlFor="email" style={styles.label}>Email Address</label>
           <input 
-            type="email" required placeholder="you@example.com" style={styles.input} 
+            id="email"
+            name="email"
+            type="email" 
+            required 
+            placeholder="you@example.com" 
+            style={styles.input} 
             value={formData.email}
             onChange={(e) => setFormData({...formData, email: e.target.value})}
           />
 
-          <label style={styles.label}>Password</label>
+          <label htmlFor="password" style={styles.label}>Password</label>
           <input 
-            type="password" required placeholder="••••••••" style={styles.input} 
+            id="password"
+            name="password"
+            type="password" 
+            required 
+            placeholder="••••••••" 
+            style={styles.input} 
             value={formData.password}
             onChange={(e) => setFormData({...formData, password: e.target.value})}
           />
 
-          <label style={styles.label}>Register as</label>
+          <label htmlFor="role" style={styles.label}>Register as</label>
           <select 
+            id="role"
+            name="role"
             style={styles.select} 
             value={formData.role}
             onChange={(e) => setFormData({...formData, role: e.target.value})}
           >
-            {/* Backend Enum: consumer, provider */}
             <option value="consumer">Consumer (Book Services)</option>
             <option value="provider">Provider (Offer Services)</option>
           </select>
