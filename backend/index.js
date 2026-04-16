@@ -23,7 +23,8 @@ const io = new Server(server, {
   cors: {
     origin: FRONTEND_URL,
     credentials: true,
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
   }
 });
 
